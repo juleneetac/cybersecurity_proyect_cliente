@@ -1,0 +1,20 @@
+<div class="container">
+    <h1>Iniciar sesión</h1>
+    
+    <form (submit)="login1()">
+      <p class="login-text">
+        <span class="fa-stack fa-lg">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-lock fa-stack-1x"></i>
+        </span>
+      </p>
+      
+      <input class="login-username" autofocus="true" required="true" type="text" name="username" placeholder="Username" [(ngModel)]="username">
+      
+      <input class="login-password" required="true" type="password" name="password" placeholder="Password" [(ngModel)]="password">
+       
+      <button class="login-submit" type="submit" >Login</button>
+    
+      </form>
+      <div class="underlay-photo"></div>
+</div>

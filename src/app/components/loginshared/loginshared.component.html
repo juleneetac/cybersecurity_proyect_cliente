@@ -1,0 +1,40 @@
+<div class="container">
+    <h1>Iniciar sesión con secret sharing</h1>
+    
+    <form (submit)="login2()">
+      <p>
+        <label>
+          Username:
+          <input type="text" name="username" placeholder="Username" [(ngModel)]="username">
+        </label>
+      </p>
+      <p>
+        <label>
+          Shared 0:
+          <input type="text" name="password0" placeholder="secret sharing 0" [(ngModel)]="shares0">
+        </label>
+      </p>
+      <p>
+        <label>
+          Shared 1:
+          <input type="text" name="password1" placeholder="secret sharing 1" [(ngModel)]="shares1">
+        </label>
+      </p>
+      <p>
+        <label>
+          Shared 2:
+          <input type="text" name="password2" placeholder="secret sharing 2" [(ngModel)]="shares2">
+        </label>
+      </p>
+      <p>
+        <label>
+          Shared 3:
+          <input type="text" name="password3" placeholder="secret sharing 3" [(ngModel)]="shares3">
+        </label>
+      </p>
+      <p>
+      <button type="submit" >Login</button>
+    </p>
+    <h3>{{secretsharingtext}} </h3>
+      </form>
+</div>
