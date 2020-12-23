@@ -1,3 +1,4 @@
+
 button {
     font-size: 16px;
     margin: 20px 0;
@@ -7,6 +8,13 @@ button {
     text-transform: none;
     font-weight: 400;
     min-width:100px;
+}
+
+div{
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .md-button-left {
@@ -27,4 +35,16 @@ button:hover {
     background-color: rgba(193, 193, 193, 0.96);
     color: rgba(44, 65, 164, 0.96);
     transition: 0.3s;
+}
+
+h3{
+    font-size: 50px;
+    font-family: Garamond, serif;
+    text-align: center;
+}
+
+h4{
+    font-size: 20px;
+    font-family: Garamond, serif;
+    text-align: center;
 }

@@ -1,7 +1,8 @@
 <h3>Tu tienda Online de confianza</h3>
-
-
-<section layout="row" layout-align="center center">
-    <button class= md-button-left  (click)="goLogin1()">Normal Login</button>
-    <button class= md-button-right  (click)="goLoginSharing()">Secret sharing Login</button>
-</section>
+<h4>¿ Cómo quieres loggearte ?</h4>
+<div>
+    <section layout="row" layout-align="center center">
+        <button class= md-button-left  title="Loggin con 1 usuario y 1 password" (click)="goLogin1()">Normal Login</button>
+        <button class= md-button-right title="Loggin con 1 usuario y secret sharing (2-4 passwords)" (click)="goLoginSharing()">Secret sharing Login</button>
+    </section>
+</div>
