@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { TiendaService } from 'src/app/services/tienda.service';
+import { RSA  as classRSA, RSA} from 'src/app/models/rsa';
+import { PublicKey  as Classpublickey} from "src/app/models/public-key";
+import * as bcu from 'bigint-crypto-utils';
+import * as bc from 'bigint-conversion';
+import { StorageComponent } from 'src/app/storage/storage/storage.component';
 
 @Component({
   selector: 'app-home',
@@ -7,13 +13,18 @@ import { Router } from '@angular/router';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  publicKeyserver;
 
   constructor(
-    private router: Router, 
+    private router: Router,
+    private casoService: TiendaService,
+    public storage: StorageComponent
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(){
+    await this.getPublicKeyrsa();
   }
+
 
   goLogin1() {
     this.router.navigateByUrl("login1")
@@ -22,5 +33,24 @@ export class HomeComponent implements OnInit {
   goLoginSharing() {
     this.router.navigateByUrl("loginsharing")
   }
+
+  async getPublicKeyrsa() {  //pide la publicKey del servidor
+    this.casoService.getpublicKeyRSA().subscribe(
+        (data) => {
+          this.publicKeyserver = new Classpublickey(bc.hexToBigint(data["e"]),bc.hexToBigint(data["n"]))
+          console.log("PublicKey del server Banco: ");
+          console.log(this.publicKeyserver)
+          let publicKeyStorage = {   //lo guardo en un array porque no me deja bigint en localStorage
+            e: data["e"],             //estará en hexadecimal
+            n: data["n"]
+          }
+          this.storage.savePublicKey(JSON.stringify(publicKeyStorage));
+        },
+        (err) => {
+          console.log("err", err);
+        }
+      );
+  }
+
 
 }

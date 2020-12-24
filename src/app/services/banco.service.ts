@@ -20,4 +20,9 @@ export class BancoService {
     return this.http.post(this.ambiente.urlBanco + '/signCiega', body);
     }
 
+
+  getDinero(body: object){
+    return this.http.post(this.ambiente.urlBanco + '/getDinero', body);
+  }
+
 }

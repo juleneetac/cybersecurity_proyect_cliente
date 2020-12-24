@@ -18,11 +18,11 @@ export class TiendaService {
    }
 ////////////////////////varios////////////////////////////////////////////////////
    login1(login1: modelUser): Observable<modelUser>{                               //el login sin secret sharing
-    return this.http.post<modelUser>(this.ambiente.urlTienda + '/login1', login1);// DEVUELVE UN MODELUSUARIO + SU TOKEN !!!
+    return this.http.post<modelUser>(this.ambiente.urlBanco + '/login1', login1);// DEVUELVE UN MODELUSUARIO + SU TOKEN !!!
   }
 
   login2sharing(login2: Object){ //: Observable<modelUser>{                               //el login sin secret sharing
-    return this.http.post<modelUser>(this.ambiente.urlTienda + '/login2shared', login2);// DEVUELVE UN MODELUSUARIO + SU TOKEN !!!
+    return this.http.post<modelUser>(this.ambiente.urlBanco + '/login2shared', login2);// DEVUELVE UN MODELUSUARIO + SU TOKEN !!!
   }
 
    /////////////////////////AES/////////////////////////////////////

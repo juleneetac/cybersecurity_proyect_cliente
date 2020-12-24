@@ -4,12 +4,12 @@ import * as bc from 'bigint-conversion';
 export class PublicKey {
     e;
     n;
-    _n2;
+    //_n2;
   
     constructor(e, n) {
       this.e = e;
       this.n = n;
-      this._n2 = this.n ** BigInt(2) // cache n^2
+      //this._n2 = this.n ** BigInt(2) // cache n^2
     }
 
     encrypt(m) {

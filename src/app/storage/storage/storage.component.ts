@@ -28,6 +28,14 @@ getUser(){
     return localStorage.getItem('user');
 }
 
+async savePublicKey(publickey){
+  localStorage.setItem('publickey', publickey);
+}
+
+getPublicKey(){
+  return localStorage.getItem('publickey');
+}
+
 clearStorage(){
   return localStorage.clear();
 }

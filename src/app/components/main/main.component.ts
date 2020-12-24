@@ -29,6 +29,7 @@ import { modelUser } from 'src/app/models/modeluser';
 })
 export class MainComponent implements OnInit {
   rsa  = new classRSA;
+  quantity: number;   //variable para la cantidad que pedir
   nameaes: string; //textbox de AES
   name: string; //textbox de encrypt RSA y firmar RSA
   sign: string; //textbox de firmar Ciega
@@ -44,237 +45,75 @@ export class MainComponent implements OnInit {
   keyhex = '89a1f34a907ff9f5d27309e73c113f8eb084f9da8a5fedc61bb1cba3f54fa5de'
   _ONE: BigInt = BigInt(1);
   localperfil: modelUser;
+  localpublickeyserver;
 
 
   constructor(
     private casoService: TiendaService, 
     private bancoService: BancoService, 
-    private storage: StorageComponent) { }
+    private storage: StorageComponent
+    ) { }
 
   async ngOnInit() {
     this.localperfil = JSON.parse(this.storage.getUser());
+    this.localpublickeyserver =  JSON.parse(this.storage.getPublicKey())
     let keyPair = await this.rsa.generateKeys();   //me da el keyPair del client
     console.log(keyPair);
     //console.log(this.rsa.publicKey);
-    await this.getPublicKeyrsa();
-    await this.postpubKeyRSA();
+    //await this.getPublicKeyrsa();
+    //await this.postpubKeyRSA();
     console.log("todo ok")
   }
 
- /////////////////////////AES/////////////////////////////////////
-  public async postCaso(event){
-    let keybuff =  await crypto.subtle.importKey('raw', hexToBuf(this.keyhex), 'AES-CBC', false, ['encrypt'])
-    console.log("has escrito AES: "+ this.nameaes)
-    let encoded = getMessageEncoding(this.nameaes)
 
-    this.iv = crypto.getRandomValues(new Uint8Array(16));
-    let encrypted = await crypto.subtle.encrypt({
-      name: "AES-CBC",
-      iv: this.iv
-    },
-    keybuff,
-    encoded);
-    console.log("encriptado : " +  encrypted)
-    let EncryptedDataArray=new Uint8Array(encrypted);
-    let EncryptedDataString=ab2str(EncryptedDataArray);
-    console.log("result" + EncryptedDataString)
-    console.log("encriptado : " +  EncryptedDataString)
-    console.log("iv : " +  this.iv)
-    let ivStr = ab2str(this.iv) 
-    console.log("ivStr "+ ivStr)
-    //lom que hace el post
-    this.casoService.postCaso(EncryptedDataString, ivStr).subscribe(
-      res =>console.log(res),
-      err=> console.log(err)
-      );
-  }
+/////////////////////////////////////////RSA+FIRMA CIEGA(pedir dinero)///////////////////////////////////////////////////
+  async get1euro() {    // get de 1€ que tendrá firma ciega incorporada
+    let cantidad = 5;   //this.quantity; 
+    let idmoneda;
+    let i = 0; 
+    let blindedm;
+    let n;
+    let r ;
+    let renc;
 
-  public async getSentence(){   // como es async sera todo promise OJO
-    let encrypted:ArrayBuffer;
-    let keybuff =  await crypto.subtle.importKey('raw', hexToBuf(this.keyhex), 'AES-CBC', false, ['decrypt'])
-    this.casoService.getFrase().subscribe(
-      async (data) => { 
-        this.body = data;
-        console.log(this.body);
-        encrypted = hexToBuf(this.body.encrypted)
-        this.iv = hexToBuf(this.body.ivhex)
-        let result = await crypto.subtle.decrypt({
-           name: "AES-CBC",
-           iv: this.iv
-          }, 
-         keybuff ,
-         encrypted);
-        this.resultStr= String.fromCharCode.apply(null, new Uint8Array(result));
-        console.log("Frase: "+ this.resultStr)
-        this.deleteSentence()
+    while (i < cantidad){
+     idmoneda[i]= await bcu.randBytes(32);
+     idmoneda[i]= buf2hex(idmoneda[i])
 
-      },
-      (err) => {
-        console.log("err", err);
-      }
-    )  //el subject service es el declarado arriba en private
-  }
-
-
-  public deleteSentence(){   //la frase se borra pasados 3 segundos
-    setTimeout(
-      () => {
-        this.resultStr = "", this.body = ""}, 3000);
-    }
-
-
- /////////////////////////RSA/////////////////////////////////////
-  async getSentencersa() {            //OK 
-    //await this.postpubKeyRSA()
-    this.casoService.getFraseRSA().subscribe(
-       async (data) => {
-          this.body = data;
-          this.decrypsen = await this.rsa.privateKey.decrypt(this.body.msg)       
-          console.log(this.decrypsen)  
-          //this.deleteSentence()
-        },
-        (err) => {
-          console.log("err", err);
-        }
-      );
-    }
-  
-  
-  async postCasorsa() {   //OK 
-      let c = await this.publicKeyserver.encrypt(this.name);  
-      let message = {
-        msg: bc.bigintToHex(c)
-      };
-      // Print the response to see if the response coincides with the message
-      this.casoService.postCasoRSA(message).subscribe(
-          (data) => {
-            this.decrypted = bc.bigintToText(bc.hexToBigint(data['msg']));
-            console.log("has escrito RSA: "+ this.decrypted)
-          },
-          
-          (err) => {
-            console.log("err", err);
-          }
-        );
-    }
-
-   
-  async signMsgrsa() {  // esto es sign de rsa
-    let m = bc.bigintToHex(bc.textToBigint(this.name));
-    let message = {
-      msg: m
-    };
-
-    // Print the response to see if the response coincides with the message  
-    this.casoService.postSignRSA(message).subscribe(
-        (data) => {
-          let s = bc.hexToBigint(data['msg']);
-          let m = bc.bigintToText(this.publicKeyserver.verify(s));
-          this.verifiedRSA = m;
-        },
-        (err) => {
-          console.log("err", err);
-        }
-        );
-   }
-
-    async postpubKeyRSA() {
-      //console.log(this.rsa.publicKey)
-      //bc.bigintToText(this.rsa.publicKey);
-      let publicclient = {
-        e: bc.bigintToHex(this.rsa.publicKey.e),
-        n: bc.bigintToHex(this.rsa.publicKey.n)
-      }
-      this.casoService.postpubKey(publicclient).subscribe(
-          (data) => {
-            console.log(data);
-          },
-          
-          (err) => {
-            console.log("err", err);
-          }
-        );
-    }
-    async getPublicKeyrsa() {  //pide la publicKey del servidor
-      
-      this.casoService.getpublicKeyRSA().subscribe(
-          (data) => {
-            this.publicKeyserver = new Classpublickey(bc.hexToBigint(data["e"]),bc.hexToBigint(data["n"]))
-            console.log(this.publicKeyserver);
-          },
-          (err) => {
-            console.log("err", err);
-          }
-        );
-    }
-
-/////////////////////////////////////////FIRMA CIEGA///////////////////////////////////////////////////
-async getSentenceCiega() {            //OK 
-  //await this.postpubKeyRSA()
-  if(this.testblindsignature())
-  {
-    console.log("blind signature ok")
-  }
-  else console.log("blind signature ko")
-
-  this.casoService.getFraseRSA().subscribe(
-     async (data) => {
-        this.body = data;
-        //console.log("MI PUBLIC KEY : "+ this.rsa.publicKey.e);
-        //console.log("MI Private KEY : "+ this.rsa.privateKey.d);
-        //console.log("the body : "+ this.body.msg)
-        this.decrypsen = await this.rsa.privateKey.decrypt(this.body.msg)       
-        console.log(this.decrypsen)  
-        //this.deleteSentence()
-      },
-      (err) => {
-        console.log("err", err);
-      }
-    );
-  }
-
-testblindsignature(){ //firma ciega
-    const m = "hello" 
-    const bigintm = bc.textToBigint(m)
+    let bigintm = (bc.hexToBigint(idmoneda[i]))
     // cegado
-    const n = this.rsa.publicKey.n
-    const r = bcu.randBetween(n) //ya es un bigint
-    const renc= this.rsa.publicKey.encryptsinconv(r) 
-    const blindedm = (bigintm*renc)%n 
-    const signedbm= this.rsa.privateKey.signsinconv(blindedm)
-    const signedm= (signedbm*bcu.modInv(r,n))%n
-    const verifiedm= bc.bigintToText(this.rsa.publicKey.verify(signedm))
+    n = this.publicKeyserver.n
+    r = bcu.randBetween(n) //ya es un bigint
+    renc= this.publicKeyserver.encryptsinconv(r) 
+    blindedm[i] = (bigintm*renc)%n 
 
-    console.log("m = "+ verifiedm)
-
-    return m ===verifiedm
-  }
-
-  async signMsgciega() {  // ESTO FIRMA CIEGA DESDE EL SERVIDOR 
-    let m = this.sign;  //textbox de la palabra que pasamos
-    const bigintm = bc.textToBigint(m)
-    // cegado
-    const n = this.publicKeyserver.n
-    const r = bcu.randBetween(n) //ya es un bigint
-    const renc= this.publicKeyserver.encryptsinconv(r) 
-    const blindedm = (bigintm*renc)%n 
-    let message = {
-      msg: bc.bigintToHex(blindedm)
+    i++;
+    } 
+       
+    let parafirmar = {
+      cantidad: cantidad,
+      firmame: bc.bigintToHex(blindedm)
     };  
     //const signedbm= this.rsa.privateKey.signsinconv(blindedm) server 
    
     // Print the response to see if the response coincides with the message  
-    this.bancoService.postSignCiega(message).subscribe(
+    this.bancoService.getDinero(parafirmar).subscribe(
         (data) => {
-          
-          let s = bc.hexToBigint(data['msg']);
-           const signedm= (s*bcu.modInv(r,n))%n
-           const verifiedm= bc.bigintToText(this.publicKeyserver.verify(signedm))
+          let s = data['msg']
+          let signedm
+          let verifiedm
+          //let s = bc.hexToBigint(data['msg']);
+          let y = 0;
+          while (i < s.length){
+            s[i] = bc.hexToBigint(s[i])
+            signedm = (s[i]*bcu.modInv(r,n))%n
+            verifiedm= bc.bigintToText(this.publicKeyserver.verify(signedm))
+          }
           console.log(verifiedm)
-         if (verifiedm ==this.sign) //SI EL MENSAJE ES IGUAL AL FIRMADO
-          this.verifiedCiega = verifiedm;
-          else this.verifiedCiega = "NO SE HA VERIFICADO CON EXITO"
 
+          // if (verifiedm ==this.sign) //SI EL MENSAJE ES IGUAL AL FIRMADO
+          // this.verifiedCiega = verifiedm;
+          // else this.verifiedCiega = "NO SE HA VERIFICADO CON EXITO"
         },
         (err) => {
           console.log("err", err);
@@ -282,43 +121,6 @@ testblindsignature(){ //firma ciega
         );
   }
 
-
-
-
-/////////////////////////////// SECRET SHARING ///////////////////////////////////////////////
-// Hex de las shares[]
-// 08019fb22cf853b58144156692a2824f10bd7592919544193bfcbe4f7dcf6a7a8784
-// 08024895d22fc64166e87992a6ea08849d774fd219776877c261bf6d6b966b15f20a
-// 080387cfd0d53120ad0badf0249bf4d5720773a17b2df884fd0ecbe2ea689102d9eb
-// 08041501c95934ecd4540c0c4afe025f794fed1bcac3c16623e50fd804729f00c2b6
-// 080577f901ad989bf4e5a572b88b9926514033f94b2e47680072376e4b2fb22f8a35
-// 0806e7877666bb43d8ed33be6ccbddbd4f74d08618bf47e1c102ae3edc2d0030397f
-// 0807d5979090b3e0b2fb5bc48e6c38a398d347ee6abd1571e6635c3a6f22bd17ddea
-
-async postsecretSharing() {
-  //console.log(this.rsa.publicKey)
-  //bc.bigintToText(this.rsa.publicKey);
-  let clavescompartidas = {
-    shares:["08019fb22cf853b58144156692a2824f10bd7592919544193bfcbe4f7dcf6a7a8784",
-            "08024895d22fc64166e87992a6ea08849d774fd219776877c261bf6d6b966b15f20a",
-            "080387cfd0d53120ad0badf0249bf4d5720773a17b2df884fd0ecbe2ea689102d9eb",
-            "08041501c95934ecd4540c0c4afe025f794fed1bcac3c16623e50fd804729f00c2b6"
-            ]
-// 080577f901ad989bf4e5a572b88b9926514033f94b2e47680072376e4b2fb22f8a35    solo nos hace falta 4 el resto los dejo comentados
-// 0806e7877666bb43d8ed33be6ccbddbd4f74d08618bf47e1c102ae3edc2d0030397f
-// 0807d5979090b3e0b2fb5bc48e6c38a398d347ee6abd1571e6635c3a6f22bd17ddea
-  };
-  this.casoService. postsecretSharing(clavescompartidas).subscribe(
-      (data) => {
-        this.secretsharingtext = data["recovered"]
-        console.log(this.secretsharingtext);
-      },
-      
-      (err) => {
-        console.log("err", err);
-      }
-    );
-}
 
 }
 
@@ -329,14 +131,18 @@ function hexToBuf (hexStr) {  //pasar de hexadecimal a Buffer
     })).buffer
 }
 
+function buf2hex(buffer) { // ArrayBuffer to hex
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+}
+
+function ab2str(buf) {
+  return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+
 function getMessageEncoding(texto : string) {
   let message = texto;
   let enc = new TextEncoder();
   return enc.encode(message);
 }
 
- 
-function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint8Array(buf));
-}
 
