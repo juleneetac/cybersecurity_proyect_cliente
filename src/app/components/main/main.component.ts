@@ -46,6 +46,8 @@ export class MainComponent implements OnInit {
   _ONE: BigInt = BigInt(1);
   localperfil: modelUser;
   localpublickeyserver;
+  serverN;
+  serverE;
 
 
   constructor(
@@ -57,8 +59,11 @@ export class MainComponent implements OnInit {
   async ngOnInit() {
     this.localperfil = JSON.parse(this.storage.getUser());
     this.localpublickeyserver =  JSON.parse(this.storage.getPublicKey())
+    this.localpublickeyserver = new Classpublickey(bc.hexToBigint(this.localpublickeyserver.e),bc.hexToBigint(this.localpublickeyserver.n))
+    console.log("La ckave pública del servidor (banco): ")
+    console.log(this.localpublickeyserver)
     let keyPair = await this.rsa.generateKeys();   //me da el keyPair del client
-    console.log(keyPair);
+    //console.log(keyPair);  //claves del cliente
     //console.log(this.rsa.publicKey);
     //await this.getPublicKeyrsa();
     //await this.postpubKeyRSA();
@@ -69,30 +74,31 @@ export class MainComponent implements OnInit {
 /////////////////////////////////////////RSA+FIRMA CIEGA(pedir dinero)///////////////////////////////////////////////////
   async get1euro() {    // get de 1€ que tendrá firma ciega incorporada
     let cantidad = 5;   //this.quantity; 
-    let idmoneda;
+    let idmoneda = [];
     let i = 0; 
-    let blindedm;
-    let n;
-    let r ;
+    let blindedm = [];
+    let n = this.localpublickeyserver.n
+    let r = bcu.randBetween(n) //ya es un bigint
     let renc;
+    let blindedmhex = [];
 
     while (i < cantidad){
-     idmoneda[i]= await bcu.randBytes(32);
-     idmoneda[i]= buf2hex(idmoneda[i])
+      idmoneda[i]= await bcu.randBytes(32);
+      idmoneda[i]= buf2hex(idmoneda[i])
 
-    let bigintm = (bc.hexToBigint(idmoneda[i]))
-    // cegado
-    n = this.publicKeyserver.n
-    r = bcu.randBetween(n) //ya es un bigint
-    renc= this.publicKeyserver.encryptsinconv(r) 
-    blindedm[i] = (bigintm*renc)%n 
-
-    i++;
+      let bigintm = [];
+      bigintm [i]  = (bc.textToBigint(idmoneda[i]))
+      // cegado
+      renc= this.localpublickeyserver.encryptsinconv(r) 
+      blindedm[i] = (bigintm[i]*renc)%n 
+      blindedmhex[i] = bc.bigintToHex(blindedm[i])   // el array pero en hexadecimal
+      i++;
     } 
+
        
     let parafirmar = {
       cantidad: cantidad,
-      firmame: bc.bigintToHex(blindedm)
+      firmame: blindedmhex
     };  
     //const signedbm= this.rsa.privateKey.signsinconv(blindedm) server 
    
@@ -100,16 +106,19 @@ export class MainComponent implements OnInit {
     this.bancoService.getDinero(parafirmar).subscribe(
         (data) => {
           let s = data['msg']
-          let signedm
-          let verifiedm
+          let signedm = [];
+          let verifiedm = [];
           //let s = bc.hexToBigint(data['msg']);
           let y = 0;
-          while (i < s.length){
-            s[i] = bc.hexToBigint(s[i])
-            signedm = (s[i]*bcu.modInv(r,n))%n
-            verifiedm= bc.bigintToText(this.publicKeyserver.verify(signedm))
+          while (y < s.length){
+            s[y] = bc.hexToBigint(s[y])
+            signedm[y] = (s[y]*bcu.modInv(r,n))%n
+            verifiedm[y] = bc.bigintToText(this.localpublickeyserver.verify(signedm[y]))  //esto ,lo hara la tienda que es quien verifique la moneda
+            y++;
           }
+          console.log("Se han firmado cegadamente OK: aqui la prueba: ")
           console.log(verifiedm)
+          console.log(idmoneda)
 
           // if (verifiedm ==this.sign) //SI EL MENSAJE ES IGUAL AL FIRMADO
           // this.verifiedCiega = verifiedm;
