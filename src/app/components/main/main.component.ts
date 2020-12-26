@@ -80,13 +80,13 @@ export class MainComponent implements OnInit {
     let n = this.localpublickeyserver.n
     let r = bcu.randBetween(n) //ya es un bigint
     let renc;
+    let bigintm = [];
     let blindedmhex = [];
 
     while (i < cantidad){
       idmoneda[i]= await bcu.randBytes(32);
       idmoneda[i]= buf2hex(idmoneda[i])
 
-      let bigintm = [];
       bigintm [i]  = (bc.textToBigint(idmoneda[i]))
       // cegado
       renc= this.localpublickeyserver.encryptsinconv(r) 

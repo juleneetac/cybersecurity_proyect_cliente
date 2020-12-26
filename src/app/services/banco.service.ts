@@ -25,4 +25,8 @@ export class BancoService {
     return this.http.post(this.ambiente.urlBanco + '/getDinero', body);
   }
 
+  getpublicKeyRSAbanco() {
+    return this.http.get(this.ambiente.urlBanco + '/publickey');
+    }
+
 }

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TiendaService } from 'src/app/services/tienda.service';
 import { RSA  as classRSA, RSA} from 'src/app/models/rsa';
 import { PublicKey  as Classpublickey} from "src/app/models/public-key";
 import * as bcu from 'bigint-crypto-utils';
 import * as bc from 'bigint-conversion';
 import { StorageComponent } from 'src/app/storage/storage/storage.component';
+import { BancoService } from 'src/app/services/banco.service';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private casoService: TiendaService,
+    private bancoService: BancoService,
     public storage: StorageComponent
   ) { }
 
@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit {
   }
 
   async getPublicKeyrsa() {  //pide la publicKey del servidor
-    this.casoService.getpublicKeyRSA().subscribe(
+    this.bancoService.getpublicKeyRSAbanco().subscribe(
         (data) => {
           this.publicKeyserver = new Classpublickey(bc.hexToBigint(data["e"]),bc.hexToBigint(data["n"]))
           console.log("PublicKey del server Banco: ");

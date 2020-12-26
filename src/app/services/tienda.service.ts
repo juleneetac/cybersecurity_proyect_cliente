@@ -54,7 +54,7 @@ export class TiendaService {
         }
 
   getpublicKeyRSA() {
-    return this.http.get(this.ambiente.urlTienda + '/publickey');
+    return this.http.get(this.ambiente.urlBanco + '/publickey');
     }
 
  /////////////////////////////// SECRET SHARING ///////////////////////////////////////////////
