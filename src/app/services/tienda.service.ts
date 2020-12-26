@@ -24,8 +24,17 @@ export class TiendaService {
   login2sharing(login2: Object){ //: Observable<modelUser>{                               //el login sin secret sharing
     return this.http.post<modelUser>(this.ambiente.urlBanco + '/login2shared', login2);// DEVUELVE UN MODELUSUARIO + SU TOKEN !!!
   }
+/////////////////////////////////////////Verificar dinero(pagar en la tienda)///////////////////////////////////////////////////
+  postpagarverificar(carterafirmada: object) {
+      return this.http.post(this.ambiente.urlTienda + '/postpayverify', carterafirmada);
+    }
 
-   /////////////////////////AES/////////////////////////////////////
+
+
+
+
+
+/////////////////////////AES/////////////////////////////////////
    postCaso(addcaso: string, iv :string){//: Observable<void> 
     let c = {addcaso , iv}
     console.log(c)

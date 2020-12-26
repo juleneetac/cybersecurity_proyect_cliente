@@ -46,12 +46,11 @@ export class MainComponent implements OnInit {
   _ONE: BigInt = BigInt(1);
   localperfil: modelUser;
   localpublickeyserver;
-  serverN;
-  serverE;
+  carterafirmada = [];
 
 
   constructor(
-    private casoService: TiendaService, 
+    private tiendaService: TiendaService, 
     private bancoService: BancoService, 
     private storage: StorageComponent
     ) { }
@@ -73,7 +72,7 @@ export class MainComponent implements OnInit {
 
 /////////////////////////////////////////RSA+FIRMA CIEGA(pedir dinero)///////////////////////////////////////////////////
   async get1euro() {    // get de 1€ que tendrá firma ciega incorporada
-    let cantidad = 5;   //this.quantity; 
+    let cantidadbanco = 5;   //this.quantity; 
     let idmoneda = [];
     let i = 0; 
     let blindedm = [];
@@ -83,7 +82,7 @@ export class MainComponent implements OnInit {
     let bigintm = [];
     let blindedmhex = [];
 
-    while (i < cantidad){
+    while (i < cantidadbanco){
       idmoneda[i]= await bcu.randBytes(32);
       idmoneda[i]= buf2hex(idmoneda[i])
 
@@ -97,7 +96,7 @@ export class MainComponent implements OnInit {
 
        
     let parafirmar = {
-      cantidad: cantidad,
+      cantidad: cantidadbanco,
       firmame: blindedmhex
     };  
     //const signedbm= this.rsa.privateKey.signsinconv(blindedm) server 
@@ -106,18 +105,18 @@ export class MainComponent implements OnInit {
     this.bancoService.getDinero(parafirmar).subscribe(
         (data) => {
           let s = data['msg']
-          let signedm = [];
-          let verifiedm = [];
+          let carterafirmada = [];
+          //let verifiedm = [];
           //let s = bc.hexToBigint(data['msg']);
           let y = 0;
           while (y < s.length){
             s[y] = bc.hexToBigint(s[y])
-            signedm[y] = (s[y]*bcu.modInv(r,n))%n
-            verifiedm[y] = bc.bigintToText(this.localpublickeyserver.verify(signedm[y]))  //esto ,lo hara la tienda que es quien verifique la moneda
+            carterafirmada[y] = (s[y]*bcu.modInv(r,n))%n
+            //verifiedm[y] = bc.bigintToText(this.localpublickeyserver.verify(signedm[y]))  //esto ,lo hara la tienda que es quien verifique la moneda
             y++;
           }
           console.log("Se han firmado cegadamente OK: aqui la prueba: ")
-          console.log(verifiedm)
+          //console.log(verifiedm)
           console.log(idmoneda)
 
           // if (verifiedm ==this.sign) //SI EL MENSAJE ES IGUAL AL FIRMADO
@@ -130,8 +129,31 @@ export class MainComponent implements OnInit {
         );
   }
 
+/////////////////////////////////////////Verificar dinero(pagar en la tienda)///////////////////////////////////////////////////
+async pagar(){                //esto se le envia a la tienda y no al banco
+  let cantidadtienda = 5;
+  let paraverificar = {
+    cantidad: cantidadtienda,
+    verificame: this.carterafirmada
+  };  
+
+  this.tiendaService.postpagarverificar(paraverificar).subscribe(
+    (data) => {
+      let respuesta = data['msg']
+      console.log(respuesta)
+      
+    },
+    (err) => {
+      console.log("err", err);
+    }
+    );
+
 
 }
+
+}
+
+////////////////////////////////////////COSAS UTILES///////////////////////////////////////////////////
 
 function hexToBuf (hexStr) {  //pasar de hexadecimal a Buffer
   hexStr = !(hexStr.length % 2) ? hexStr : '0' + hexStr
