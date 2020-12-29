@@ -1,7 +1,15 @@
 <h1>Bienvenido usuario: {{localperfil.username}}</h1>
 
-<form (submit)="get1euro()">
-   
-  <button type="submit" >5 $</button>
-
-  </form>
+  <p>Ingrese la cantidad de dniero que desea sacar</p>
+  <div>
+    <form name ="getDinero" (ngSubmit)= "get1euro()">
+      <div>
+        <label>Firmar:
+        <input type="text" name="solicitarDinero" placeholder="Ingrese cantidad €" [(ngModel)]="bankquantity">  
+        </label>
+  
+        <button type ="submit">Pedir dinero</button>
+      </div>
+     
+    </form>
+  </div>

@@ -29,7 +29,7 @@ import { modelUser } from 'src/app/models/modeluser';
 })
 export class MainComponent implements OnInit {
   rsa  = new classRSA;
-  quantity: number;   //variable para la cantidad que pedir
+  bankquantity: number;   //variable para la cantidad que pedir
   nameaes: string; //textbox de AES
   name: string; //textbox de encrypt RSA y firmar RSA
   sign: string; //textbox de firmar Ciega
@@ -72,7 +72,7 @@ export class MainComponent implements OnInit {
 
 /////////////////////////////////////////RSA+FIRMA CIEGA(pedir dinero)///////////////////////////////////////////////////
   async get1euro() {    // get de 1€ que tendrá firma ciega incorporada
-    let cantidadbanco = 5;   //this.quantity; 
+    //let cantidadbanco = 5;   //this.quantity; 
     let idmoneda = [];
     let i = 0; 
     let blindedm = [];
@@ -82,7 +82,7 @@ export class MainComponent implements OnInit {
     let bigintm = [];
     let blindedmhex = [];
 
-    while (i < cantidadbanco){
+    while (i < this.bankquantity){
       idmoneda[i]= await bcu.randBytes(32);
       idmoneda[i]= buf2hex(idmoneda[i])
 
@@ -96,7 +96,7 @@ export class MainComponent implements OnInit {
 
        
     let parafirmar = {
-      cantidad: cantidadbanco,
+      cantidad: this.bankquantity,
       firmame: blindedmhex
     };  
     //const signedbm= this.rsa.privateKey.signsinconv(blindedm) server 
@@ -112,7 +112,7 @@ export class MainComponent implements OnInit {
           while (y < s.length){
             s[y] = bc.hexToBigint(s[y])
             carterafirmada[y] = (s[y]*bcu.modInv(r,n))%n
-            //verifiedm[y] = bc.bigintToText(this.localpublickeyserver.verify(signedm[y]))  //esto ,lo hara la tienda que es quien verifique la moneda
+            //verifiedm[y] = bc.bigintToText(this.localpublickeyserver.verify(carterafirmada[y]))  //esto ,lo hara la tienda que es quien verifique la moneda
             y++;
           }
           console.log("Se han firmado cegadamente OK: aqui la prueba: ")
