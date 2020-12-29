@@ -1,10 +1,10 @@
 <h1>Bienvenido usuario: {{localperfil.username}}</h1>
-
+<h1>Dinero en cartera: {{carterafirmada.length}}</h1>
   <p>Ingrese la cantidad de dniero que desea sacar</p>
   <div>
     <form name ="getDinero" (ngSubmit)= "get1euro()">
       <div>
-        <label>Firmar:
+        <label>Pedir:
         <input type="text" name="solicitarDinero" placeholder="Ingrese cantidad €" [(ngModel)]="bankquantity">  
         </label>
   
@@ -12,4 +12,16 @@
       </div>
      
     </form>
+    <form name ="PAGAR" (ngSubmit)= "pagar()">
+      <div>
+        <label>Pagar:
+        <input type="text" name="pagarDinero" placeholder="Ingrese cantidad €" [(ngModel)]="payquantity">  
+        </label>
+  
+        <button type ="submit">Pagar dinero</button>
+      </div>
+     
+    </form>
+
+
   </div>
