@@ -138,29 +138,37 @@ async pagar(){                //esto se le envia a la tienda y no al banco
   let cantidadtienda = this.payquantity;
   let i =0
   let cosasapagar = []  //esto son las monedas con las que pagamos
-  while(i<cantidadtienda)
-  {
-    cosasapagar[i] = this.carterafirmada.pop()
-    i++
-  }
 
-  console.log(cosasapagar)
-  console.log("Tienes este dinero restante en la cartera: "+ this.carterafirmada.length)
-  let paraverificar = {
-    cantidad: cantidadtienda,
-    verificame: cosasapagar
-  };  
+  if(this.payquantity <= this.carterafirmada.length){  //miramos que lo que se va a comprar no sea mayor que lo que tenemos en cartera
 
-  this.tiendaService.postpagarverificar(paraverificar).subscribe(
-    (data) => {
-      let respuesta = data['msg']
-      console.log(respuesta)
-      
-    },
-    (err) => {
-      console.log("err", err);
+    while(i<cantidadtienda)
+    {
+      cosasapagar[i] = this.carterafirmada.pop()
+      i++
     }
-    );
+
+    console.log(cosasapagar)
+    console.log("Tienes este dinero restante en la cartera: "+ this.carterafirmada.length)
+    let paraverificar = {
+      cantidad: cantidadtienda,
+      verificame: cosasapagar,
+    };  
+
+    this.tiendaService.postpagarverificar(paraverificar).subscribe(
+      (data) => {
+        let respuesta = data['msg']
+        console.log(respuesta)
+        
+      },
+      (err) => {
+        console.log(err.error.msg)
+        console.log("err", err);
+      }
+      );
+    }
+  else{
+    console.log("No tienes suficiente dinero en cartera, pídele al banco")
+  }
 
 
 }
