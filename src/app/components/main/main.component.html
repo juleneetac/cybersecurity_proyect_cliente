@@ -1,7 +1,26 @@
-<h1>Bienvenido usuario: {{localperfil.username}}</h1>
-<h1>Dinero en cartera: {{carterafirmada.length}}</h1>
-  <p>Ingrese la cantidad de dniero que desea sacar</p>
-  <div>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<body>
+	
+	<header id="main-header">
+		
+		<a id="logo-header">
+			<span class="site-name">Banco Online </span>
+			<span class="site-desc">  Saca dinero / Compra</span>
+		</a> <!-- / #logo-header -->
+
+		<nav>
+			<ul>
+				<li class= "recuadrar"><a><span class="material-icons"> perm_identity</span> {{localperfil.username}}</a></li>
+				<li class= "recuadrar"><a><span class="material-icons">account_balance_wallet</span> {{carterafirmada.length}} €  <span class = "description">(dinero en cartera)</span></a></li>
+				<li class= "recuadrar"><a href="#">Contacto</a></li>
+			</ul>
+		</nav><!-- / nav -->
+	</header><!-- / #main-header -->
+</body>
+
+<div>
+  <div class = "pedirdinero">
+  <h3>¿ Qué cantidad desea sacar de su banco ? <span class="description">(lo que saque se añadirá a su cartera para poder comprar) </span> </h3>
     <form name ="getDinero" (ngSubmit)= "get1euro()">
       <div>
         <label>Pedir:
@@ -10,8 +29,11 @@
   
         <button type ="submit">Pedir dinero</button>
       </div>
-     
     </form>
+  </div>
+
+  <div class = "pagardinero">
+    <h3>¿ Cuánto va a pagar ? <span class="description">(se le descontará de su cartera en cuanto se validen las monedas) </span> </h3>
     <form name ="PAGAR" (ngSubmit)= "pagar()">
       <div>
         <label>Pagar:
@@ -20,8 +42,8 @@
   
         <button type ="submit">Pagar dinero</button>
       </div>
-     
     </form>
-
+  </div>
 
   </div>
+
