@@ -28,6 +28,7 @@ export class LoginComponent implements OnInit {
 
 
   ngOnInit() {
+    //this.storage.clearStorage()
   }
 
   goMain() {
@@ -47,6 +48,7 @@ export class LoginComponent implements OnInit {
         //Save info locally
         await this.storage.saveToken(this.storageuser.jwt);
         await this.storage.saveUser(JSON.stringify(this.storageuser));
+
         
   
         await this.goMain();    //Que al loguearte vayas al Main

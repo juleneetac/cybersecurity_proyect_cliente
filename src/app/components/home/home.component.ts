@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
   ) { }
 
   async ngOnInit(){
+    this.storage.clearStorage()
     await this.getPublicKeyrsa();
   }
 

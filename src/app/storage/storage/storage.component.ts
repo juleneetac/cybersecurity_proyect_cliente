@@ -36,6 +36,14 @@ getPublicKey(){
   return localStorage.getItem('publickey');
 }
 
+async saveCarteraCifrada(cartera){
+  localStorage.setItem('cartera',cartera);
+}
+
+getCarteraCifrada(){
+  return localStorage.getItem('cartera');
+}
+
 clearStorage(){
   return localStorage.clear();
 }

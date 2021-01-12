@@ -47,6 +47,7 @@ export class MainComponent implements OnInit {
   _ONE: BigInt = BigInt(1);
   localperfil: modelUser;
   localpublickeyserver;
+  localcarteracifrada = [];
   carterafirmada = []; //id de monedas firmadas
   
 
@@ -56,6 +57,8 @@ export class MainComponent implements OnInit {
     private bancoService: BancoService, 
     private storage: StorageComponent
     ) { }
+
+    // SI NO FIUNCIONA CAMBIAR TODO LO DE localcarteracifrada POR carterafirmada
 
   async ngOnInit() {
     this.localperfil = JSON.parse(this.storage.getUser());
@@ -68,7 +71,14 @@ export class MainComponent implements OnInit {
     //console.log(this.rsa.publicKey);
     //await this.getPublicKeyrsa();
     //await this.postpubKeyRSA();
+    if (JSON.parse(this.storage.getCarteraCifrada()) == null){  //si iniciamos la aplicacion todavia no exisistira la cartera por tanto
+      this.localcarteracifrada = []                             //esto lo determinará a 0
+    }
+    else{
+      this.localcarteracifrada =  JSON.parse(this.storage.getCarteraCifrada())  //si ya hay moneda en el local storage las cogera
+    }
     console.log("todo ok")
+    
   }
 
 
@@ -113,18 +123,20 @@ export class MainComponent implements OnInit {
           else{
             let s = data['msg']
             let x = 0; //para nuevas monedas
-            let y = this.carterafirmada.length; //para el total de monedas incluyendo antiguas
+            let y = this.localcarteracifrada.length; //para el total de monedas incluyendo antiguas
        
-            let suma = this.carterafirmada.length+s.length
+            let suma = this.localcarteracifrada.length+s.length
           while ((y < suma) && (x<s.length)){ //esto podria habersehecho con un push pero bueno
             s[x] = bc.hexToBigint(s[x])
-            this.carterafirmada[y] =bc.bigintToHex((s[x]*bcu.modInv(r,n))%n)
+            this.localcarteracifrada[y] =bc.bigintToHex((s[x]*bcu.modInv(r,n))%n) 
             y++;
             x++;
           }
           console.log("Se han firmado cegadamente OK")
 
-          console.log("Tienes este dinero en la cartera: "+ this.carterafirmada.length)
+          console.log("Tienes este dinero en la cartera: "+ this.localcarteracifrada.length)
+          this.storage.saveCarteraCifrada(JSON.stringify(this.localcarteracifrada));
+          this.localcarteracifrada =  JSON.parse(this.storage.getCarteraCifrada())
         }
         },
         (err) => {
@@ -139,16 +151,18 @@ async pagar(){                //esto se le envia a la tienda y no al banco
   let i =0
   let cosasapagar = []  //esto son las monedas con las que pagamos
 
-  if(this.payquantity <= this.carterafirmada.length){  //miramos que lo que se va a comprar no sea mayor que lo que tenemos en cartera
+  if(this.payquantity <= this.localcarteracifrada.length){  //miramos que lo que se va a comprar no sea mayor que lo que tenemos en cartera
 
     while(i<cantidadtienda)
     {
-      cosasapagar[i] = this.carterafirmada.pop()
+      cosasapagar[i] = this.localcarteracifrada.pop()
       i++
     }
 
+    this.storage.saveCarteraCifrada(JSON.stringify(this.localcarteracifrada));
+
     console.log(cosasapagar)
-    console.log("Tienes este dinero restante en la cartera: "+ this.carterafirmada.length)
+    console.log("Tienes este dinero restante en la cartera: "+ this.localcarteracifrada.length)
     let paraverificar = {
       cantidad: cantidadtienda,
       verificame: cosasapagar,
