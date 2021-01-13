@@ -150,7 +150,7 @@ async pagar(){                //esto se le envia a la tienda y no al banco
   let cantidadtienda = this.payquantity;
   let i =0
   let cosasapagar = []  //esto son las monedas con las que pagamos
-
+  
   if(this.payquantity <= this.localcarteracifrada.length){  //miramos que lo que se va a comprar no sea mayor que lo que tenemos en cartera
 
     while(i<cantidadtienda)
