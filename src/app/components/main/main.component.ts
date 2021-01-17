@@ -13,6 +13,7 @@ import * as paillierBigint from 'paillier-bigint'
 import { split, combine } from 'shamirs-secret-sharing'
 import { StorageComponent } from 'src/app/storage/storage/storage.component';
 import { modelUser } from 'src/app/models/modeluser';
+import { Router } from '@angular/router';
 //NOTAS IMPORTANTES para lo del Buffer:
 //Poner esto en el polyfills.ts
 //(window as any).global = window;
@@ -55,6 +56,7 @@ export class MainComponent implements OnInit {
   constructor(
     private tiendaService: TiendaService, 
     private bancoService: BancoService, 
+    private router: Router,
     private storage: StorageComponent
     ) { }
 
@@ -184,8 +186,14 @@ async pagar(){                //esto se le envia a la tienda y no al banco
     console.log("No tienes suficiente dinero en cartera, pídele al banco")
   }
 
-
 }
+///////////////////////////////////////Log out clear storage//////////////////////
+
+async logout() {
+  this.router.navigateByUrl("")
+  this.storage.clearStorage()
+}
+
 
 }
 
@@ -211,5 +219,6 @@ function getMessageEncoding(texto : string) {
   let enc = new TextEncoder();
   return enc.encode(message);
 }
+
 
 

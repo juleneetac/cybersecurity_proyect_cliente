@@ -12,7 +12,7 @@
 			<ul>
 				<li class= "recuadrar"><a><span class="material-icons"> perm_identity</span> {{localperfil.username}}</a></li>
 				<li class= "recuadrar"><a><span class="material-icons">account_balance_wallet</span> {{localcarteracifrada.length}} €  <span class = "description">(dinero en cartera)</span></a></li>
-				<li class= "recuadrar"><a href="#">Contacto</a></li>
+				<li class= "recuadrar"><a href=""><span class="material-icons"> exit_to_app </span>Log out</a></li>
 			</ul>
 		</nav><!-- / nav -->
 	</header><!-- / #main-header -->
@@ -25,6 +25,7 @@
       <div>
         <label>Pedir:
         <input type="text" name="solicitarDinero" placeholder="Ingrese cantidad €" [(ngModel)]="bankquantity">  
+        <input type="text" name="clave" placeholder="your password" [(ngModel)]="bankquantity">  
         </label>
   
         <button type ="submit">Pedir dinero</button>
@@ -38,6 +39,7 @@
       <div>
         <label>Pagar:
         <input type="text" name="pagarDinero" placeholder="Ingrese cantidad €" [(ngModel)]="payquantity">  
+        <input type="text" name="clave" placeholder="your password" [(ngModel)]="bankquantity"> 
         </label>
   
         <button type ="submit">Pagar dinero</button>
