@@ -53,6 +53,7 @@ export class MainComponent implements OnInit {
   salt; //el salt que le pasamos al hacer el login
   passwordsacar;   //lo que introducire en el textbox para sacar dinero a tu cartera y luego se derivara en una clave para comparar
   passwordpay;      //lo que introducire en el textbox para pagar a la tienda
+  //////////////////////para secretsharing hemos cogido siempre la 
   parapagar;
   
 
@@ -217,6 +218,7 @@ async pagar(){                //esto se le envia a la tienda y no al banco
 
       this.storage.saveCarteraCifrada(JSON.stringify(this.localcarteracifrada));
 
+      console.log("Monedas que se vana  pagar: ")
       console.log(cosasapagar)
       console.log("Tienes este dinero restante en la cartera: "+ this.localcarteracifrada.length)
       let paraverificar = {
