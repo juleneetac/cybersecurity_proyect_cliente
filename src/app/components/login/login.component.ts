@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { StorageComponent } from 'src/app/storage/storage/storage.component';
+import { randomBytes } from 'crypto';
 
 
 @Component({
@@ -45,6 +46,15 @@ export class LoginComponent implements OnInit {
         this.storageuser = new modelStorageuser (response.username, response.jwt )
         console.log(this.storageuser);
 
+
+        /////aqui derivamos una clave para guardarla en localstorage
+       let salt = crypto.getRandomValues(new Uint8Array(16));
+       let derivedKey = await deriveKey(salt, this.password)   //creo la key para poder cifrar despues el dinero de la cartera
+       let exported = await exportCryptoKey(derivedKey)
+       await this.storage.savederivedKey(JSON.stringify(buf2hex(exported)));  //aqui a parter de pasarlo a json le hago un export
+       await this.storage.saveSalt(JSON.stringify(buf2hex(salt)));
+      
+
         //Save info locally
         await this.storage.saveToken(this.storageuser.jwt);
         await this.storage.saveUser(JSON.stringify(this.storageuser));
@@ -82,4 +92,45 @@ private async handleError(err: HttpErrorResponse) {
   }
 
 
+
+}
+
+////////////////////////////////cosas utiles/////////////////////////////////////
+function getKeyMaterial(password) {                   //convierte la clave
+  let enc = new TextEncoder();
+  return  window.crypto.subtle.importKey(
+    "raw",
+    enc.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits", "deriveKey"]
+  );
+}
+
+
+async function deriveKey(salt, password) {           
+  let keyMaterial = await getKeyMaterial(password);
+  let key = await window.crypto.subtle.deriveKey(
+    {
+      "name": "PBKDF2",
+      salt: salt,
+      "iterations": 100000,
+      "hash": "SHA-256"
+    },
+    keyMaterial,
+    { "name": "AES-GCM", "length": 256},
+    true,
+    [ "encrypt", "decrypt" ]
+  );
+  return key;
+}
+
+async function exportCryptoKey(key) {       //para converirlo a arraybuffer
+  const exported = await window.crypto.subtle.exportKey("raw", key);
+  return exported;
+}
+
+
+function buf2hex(buffer) { // ArrayBuffer to hex
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
 }

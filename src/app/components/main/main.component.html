@@ -25,7 +25,7 @@
       <div>
         <label>Pedir:
         <input type="text" name="solicitarDinero" placeholder="Ingrese cantidad €" [(ngModel)]="bankquantity">  
-        <input type="text" name="clave" placeholder="your password" [(ngModel)]="bankquantity">  
+        <input type="password" name="clave" placeholder="your password" [(ngModel)]="passwordsacar">  
         </label>
   
         <button type ="submit">Pedir dinero</button>
@@ -39,7 +39,7 @@
       <div>
         <label>Pagar:
         <input type="text" name="pagarDinero" placeholder="Ingrese cantidad €" [(ngModel)]="payquantity">  
-        <input type="text" name="clave" placeholder="your password" [(ngModel)]="bankquantity"> 
+        <input type="password" name="clave" placeholder="your password" [(ngModel)]="passwordpay"> 
         </label>
   
         <button type ="submit">Pagar dinero</button>

@@ -63,7 +63,8 @@ export class CasoComponent implements OnInit {
     this.iv = crypto.getRandomValues(new Uint8Array(16));
     let encrypted = await crypto.subtle.encrypt({
       name: "AES-CBC",
-      iv: this.iv
+      iv: this.iv,
+
     },
     keybuff,
     encoded);
@@ -328,7 +329,17 @@ function getMessageEncoding(texto : string) {
   return enc.encode(message);
 }
 
+function getArrayEncoding(texto : string) {
+  let message = texto;
+  let enc = new TextEncoder();
+  return enc.encode(message);
+}
+
  
 function ab2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+
+function buf2hex(buffer) { // ArrayBuffer to hex
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
 }

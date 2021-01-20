@@ -44,6 +44,22 @@ getCarteraCifrada(){
   return localStorage.getItem('cartera');
 }
 
+getderivedKey(){
+  return localStorage.getItem('derivedKey' );
+}
+
+async savederivedKey(derivedKey){
+  localStorage.setItem('derivedKey', derivedKey);
+}
+
+getSalt(){
+  return localStorage.getItem('salt');
+}
+
+async saveSalt(salt){
+  localStorage.setItem('salt', salt);
+}
+
 clearStorage(){
   return localStorage.clear();
 }
