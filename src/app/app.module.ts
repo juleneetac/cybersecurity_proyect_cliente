@@ -5,7 +5,6 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
-import { CasoComponent } from './components/caso/caso.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { MainComponent } from './components/main/main.component';
@@ -18,7 +17,6 @@ import { LoginsharedComponent } from './components/loginshared/loginshared.compo
 @NgModule({
   declarations: [
     AppComponent,
-    CasoComponent,
     LoginComponent,
     MainComponent,
     HomeComponent,

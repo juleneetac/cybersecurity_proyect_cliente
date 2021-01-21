@@ -6,7 +6,6 @@ import * as myrsa from 'class_RSA/src/index';
 
 export class RSA {
     privateKey: PrivateKey;
-    //publicKey: PublicKey;
     publicKey: PublicKey;
 // Since we are working with BigInt values, subtract 1 as integer number is not valid, so we create a public constant
  _ONE = BigInt(1);

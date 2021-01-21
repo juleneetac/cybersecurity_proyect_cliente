@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { StorageComponent } from 'src/app/storage/storage/storage.component';
-import { randomBytes } from 'crypto';
 
 
 @Component({
@@ -18,7 +17,7 @@ export class LoginComponent implements OnInit {
   user: modelUser;
   storageuser: modelStorageuser;
   username: string;
-  password: string;//string[] = [];
+  password: string;
 
   constructor(
     private tiendaService: TiendaService, 
@@ -62,9 +61,7 @@ export class LoginComponent implements OnInit {
         
   
         await this.goMain();    //Que al loguearte vayas al Main
-  
-  
-        //console.log(String(this.auth.authenticationState));
+
       },
       err => {
         console.log(err);
@@ -85,10 +82,7 @@ private async handleError(err: HttpErrorResponse) {
     console.log('salida');
     const toast = await this.toaster.showError("Mal password", "Tienda Online")
   }
-  // else if  (err.status == 401) {
-  //   console.log('salida');
-  //   const toast = await this.toaster.showError("Usuario vacio", "Tienda Online")
-  // }
+
   }
 
 

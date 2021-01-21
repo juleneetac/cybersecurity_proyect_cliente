@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { RSA  as classRSA, RSA} from 'src/app/models/rsa';
 import { PublicKey  as Classpublickey} from "src/app/models/public-key";
-import * as bcu from 'bigint-crypto-utils';
 import * as bc from 'bigint-conversion';
 import { StorageComponent } from 'src/app/storage/storage/storage.component';
 import { BancoService } from 'src/app/services/banco.service';
